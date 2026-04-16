@@ -10,7 +10,10 @@ from typing import Dict, List, Tuple
 
 
 def _norm(s) -> str:
-    return re.sub(r'[^a-z0-9]+', ' ', (s or '').lower()).strip()
+    n = re.sub(r'[^a-z0-9]+', ' ', (s or '').lower()).strip()
+    n = re.sub(r'^sebi\b\s*', '', n)
+    n = re.sub(r'^securities and exchange board of india\b\s*', '', n)
+    return n.strip()
 
 
 def title_match(pred: str, gold: str, fuzzy_threshold: float = 0.85) -> Tuple[bool, bool]:
@@ -23,9 +26,21 @@ def title_match(pred: str, gold: str, fuzzy_threshold: float = 0.85) -> Tuple[bo
     return (strict, ratio >= fuzzy_threshold)
 
 
+_DOC_TYPE_ALIASES = {
+    'regulations': 'regulation',
+    'acts': 'act',
+    'gazette_notification': 'notification',
+    'gazette_notifications': 'notification',
+    'master_circulars': 'master_circular',
+    'circulars': 'circular',
+    'consultation_papers': 'consultation_paper',
+}
+
+
 def _norm_doc_type(dt: str) -> str:
-    """Normalize doc_type to snake_case for consistent matching."""
-    return re.sub(r'[^a-z0-9]+', '_', (dt or '').lower()).strip('_')
+    """Normalize doc_type to canonical snake_case form."""
+    normed = re.sub(r'[^a-z0-9]+', '_', (dt or '').lower()).strip('_')
+    return _DOC_TYPE_ALIASES.get(normed, normed)
 
 
 def doc_key(doc: Dict) -> str:
@@ -121,10 +136,10 @@ def unresolved_rate(pred_mentions: List[Dict]) -> float:
 
 def slice_by_doc_type(pred_docs: List[Dict], gold_docs: List[Dict]) -> Dict[str, Dict]:
     by_type: Dict[str, Dict] = {}
-    types = {d.get('doc_type') for d in pred_docs + gold_docs if d.get('doc_type')}
+    types = {_norm_doc_type(d.get('doc_type') or '') for d in pred_docs + gold_docs if d.get('doc_type')}
     for t in sorted(types):
-        p_slice = [d for d in pred_docs if d.get('doc_type') == t]
-        g_slice = [d for d in gold_docs if d.get('doc_type') == t]
+        p_slice = [d for d in pred_docs if _norm_doc_type(d.get('doc_type') or '') == t]
+        g_slice = [d for d in gold_docs if _norm_doc_type(d.get('doc_type') or '') == t]
         by_type[t] = match_documents(p_slice, g_slice)
     return by_type
 

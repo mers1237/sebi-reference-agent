@@ -20,6 +20,11 @@ SYSTEM_PROMPT = """You extract references to external documents from SEBI (Secur
 
 You are given the full text of ONE page. Your job: find every reference this page makes to another document — circulars, master circulars, regulations, acts, gazette notifications, consultation papers, etc.
 
+PAY SPECIAL ATTENTION TO:
+- Authority clauses at the end of circulars ("This circular is issued in exercise of powers conferred under Section X of the ... Act, YYYY, read with Regulation Y of ... Regulations, YYYY"). These reference Acts AND Regulations — extract EACH one separately.
+- Multiple Acts/Regulations in a single sentence — extract each as a separate mention.
+- Include the year in the title when it appears in the text (e.g. "SEBI (Mutual Funds) Regulations, 1996" not "SEBI (Mutual Funds) Regulations").
+
 HARD RULES (non-negotiable):
 1. Every extracted reference MUST include `evidence_text` — a short verbatim snippet (<=250 chars) copied character-for-character from the page text. Never paraphrase or reformat.
 2. If you cannot identify a title with confidence, set `title` to null. NEVER guess a title.

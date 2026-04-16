@@ -288,6 +288,21 @@ def test_match_documents_normalizes_doc_type():
     assert r['fn'] == 0
 
 
+def test_match_documents_normalizes_plural_and_title_prefix():
+    pred = [
+        {'canonical_title': 'SEBI (Mutual Funds) Regulations, 1996', 'doc_type': 'regulation'},
+        {'canonical_title': 'SEBI Master Circular for Mutual Funds', 'doc_type': 'master_circular'},
+    ]
+    gold = [
+        {'canonical_title': 'SEBI (Mutual Funds) Regulations, 1996', 'doc_type': 'Regulations'},
+        {'canonical_title': 'Master Circular for Mutual Funds', 'doc_type': 'Master Circular'},
+    ]
+    r = match_documents(pred, gold)
+    assert r['tp'] == 2, f"Expected 2 TP, got {r['tp']}. FP keys: {r['fp_keys']}, FN keys: {r['fn_keys']}"
+    assert r['fp'] == 0
+    assert r['fn'] == 0
+
+
 def test_title_match_fuzzy():
     _, fuzzy = title_match('SEBI LODR Regulations 2015', 'SEBI LODR Regulations, 2015')
     assert fuzzy
