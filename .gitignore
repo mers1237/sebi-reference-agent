@@ -1,0 +1,12 @@
+output/
+.env
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+tests/fixtures/pdfs/*.pdf
+.venv/
+venv/
+.idea/
+.vscode/
+*.egg-info/
