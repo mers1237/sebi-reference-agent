@@ -156,6 +156,30 @@ def test_verify_mentions_clears_bad_date_but_keeps_mention():
     assert out[0]['title'] == 'SEBI Act'
 
 
+def test_verify_mentions_clears_ungrounded_date():
+    pages = ["SEBI (ICDR) Regulations, 2018 apply here."]
+    mentions = [{
+        'source_page': 0, 'mention_text': 'ICDR Regs',
+        'evidence_text': 'SEBI (ICDR) Regulations, 2018 apply here',
+        'date': '2018-01-01', 'title': 'SEBI (ICDR) Regulations, 2018',
+    }]
+    out = verify_mentions(mentions, pages)
+    assert len(out) == 1
+    assert out[0]['date'] is None, "date whose year appears in evidence but full date is fabricated should be nulled"
+
+
+def test_verify_mentions_keeps_grounded_date():
+    pages = ["Circular dated March 13, 2026 prescribes guidelines."]
+    mentions = [{
+        'source_page': 0, 'mention_text': 'circular',
+        'evidence_text': 'Circular dated March 13, 2026 prescribes guidelines',
+        'date': '2026-03-13', 'title': 'Some Circular',
+    }]
+    out = verify_mentions(mentions, pages)
+    assert len(out) == 1
+    assert out[0]['date'] == '2026-03-13'
+
+
 # --- Agent parsing ----------------------------------------------------------
 
 def test_strip_fences():
@@ -253,6 +277,15 @@ def test_match_documents_p_r_f1():
     assert r['fn'] == 1
     assert round(r['precision'], 3) == round(2 / 3, 3)
     assert round(r['recall'], 3) == round(2 / 3, 3)
+
+
+def test_match_documents_normalizes_doc_type():
+    pred = [{'canonical_title': 'Master Circular for Stock Brokers', 'doc_type': 'master_circular'}]
+    gold = [{'canonical_title': 'Master Circular for Stock Brokers', 'doc_type': 'Master Circular'}]
+    r = match_documents(pred, gold)
+    assert r['tp'] == 1, "doc_type 'master_circular' should match 'Master Circular'"
+    assert r['fp'] == 0
+    assert r['fn'] == 0
 
 
 def test_title_match_fuzzy():

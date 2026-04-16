@@ -73,6 +73,12 @@ python -m src.eval --gold tests/gold --predictions output/
 pytest tests/ -v
 python scripts/draft_gold.py --pdf path/to/file.pdf --save tests/gold/<name>.json
 python scripts/compare_and_merge.py --agent-output output/documents.json --draft-gold tests/gold/<name>.json --save diff.json
+
+# Automated eval cycle
+python scripts/run_eval_cycle.py --version baseline --delay 13   # run agent + eval
+python scripts/run_eval_cycle.py --version baseline --eval-only  # re-eval without API
+python scripts/run_eval_cycle.py --gold-only --delay 13          # generate gold drafts
+python scripts/run_eval_cycle.py --compare baseline v1 v2        # progression table
 ```
 
 ## Environment
@@ -91,4 +97,5 @@ Set `GEMINI_API_KEY` in your environment or pass `--api-key`. Without a key, `sr
 - `tests/test_core.py` — unit tests (no network / no PDF required)
 - `scripts/draft_gold.py` — full-doc single-pass gold drafting (independent strategy)
 - `scripts/compare_and_merge.py` — agent-vs-draft diff
+- `scripts/run_eval_cycle.py` — automated eval: run agent + gold + eval + progression report
 - `scripts/scrape_sebi_index.py` — v2 metadata scraper stub

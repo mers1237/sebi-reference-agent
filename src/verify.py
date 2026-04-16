@@ -27,6 +27,33 @@ def _normalize(s: str) -> str:
     return re.sub(r'\s+', ' ', (s or '')).strip().lower()
 
 
+_MONTH_NAMES = (
+    'january', 'february', 'march', 'april', 'may', 'june',
+    'july', 'august', 'september', 'october', 'november', 'december',
+    'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
+)
+_NUMERIC_DATE_RE = re.compile(r'\d{1,2}[./\-]\d{1,2}[./\-]\d{2,4}')
+
+
+def _date_grounded(date_str: str, evidence: str) -> bool:
+    """True if the evidence contains a real date expression, not just a bare year.
+
+    Catches the common hallucination where the LLM sees 'Regulations, 2018'
+    and fabricates '2018-01-01'.
+    """
+    if not date_str or not evidence:
+        return False
+    year = date_str[:4]
+    if year not in evidence:
+        return False
+    ev_lower = evidence.lower()
+    if any(m in ev_lower for m in _MONTH_NAMES):
+        return True
+    if _NUMERIC_DATE_RE.search(evidence):
+        return True
+    return False
+
+
 def evidence_present(evidence: str, page_text: str) -> bool:
     """Whitespace-tolerant containment check for verbatim evidence."""
     if not evidence:
@@ -67,6 +94,8 @@ def verify_mentions(mentions: List[Dict], pages_text: List[str], strict_evidence
         if not m.get('evidence_text'):
             continue
         if not is_valid_date(m.get('date')):
+            m = {**m, 'date': None}
+        if m.get('date') and not _date_grounded(m['date'], m.get('evidence_text', '')):
             m = {**m, 'date': None}
         if is_self_reference(m.get('mention_text') or '') or is_self_reference(m.get('evidence_text') or ''):
             continue

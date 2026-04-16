@@ -23,6 +23,11 @@ def title_match(pred: str, gold: str, fuzzy_threshold: float = 0.85) -> Tuple[bo
     return (strict, ratio >= fuzzy_threshold)
 
 
+def _norm_doc_type(dt: str) -> str:
+    """Normalize doc_type to snake_case for consistent matching."""
+    return re.sub(r'[^a-z0-9]+', '_', (dt or '').lower()).strip('_')
+
+
 def doc_key(doc: Dict) -> str:
     """Canonical key for set-matching documents.
 
@@ -32,7 +37,7 @@ def doc_key(doc: Dict) -> str:
     if did:
         return f"id:{did}"
     title = _norm(doc.get('canonical_title') or doc.get('title') or '')
-    dtype = doc.get('doc_type') or ''
+    dtype = _norm_doc_type(doc.get('doc_type') or '')
     return f"t:{dtype}:{title}"
 
 
@@ -125,16 +130,31 @@ def slice_by_doc_type(pred_docs: List[Dict], gold_docs: List[Dict]) -> Dict[str,
 
 
 def evaluate(pred_dir: Path, gold_dir: Path) -> Dict:
-    pred_docs_path = pred_dir / 'documents.json'
-    pred_mentions_path = pred_dir / 'mentions.json'
-    pred_docs = json.loads(pred_docs_path.read_text(encoding='utf-8')) if pred_docs_path.exists() else []
-    pred_mentions = json.loads(pred_mentions_path.read_text(encoding='utf-8')) if pred_mentions_path.exists() else []
+    """Evaluate predictions against gold labels.
 
+    Supports two layouts:
+    1. Flat: pred_dir/documents.json + gold_dir/*.json (legacy)
+    2. Per-PDF: pred_dir/{stem}/documents.json matched to gold_dir/{stem}.json
+    """
     report: Dict = {}
     for gold_file in sorted(gold_dir.glob('*.json')):
         gold = json.loads(gold_file.read_text(encoding='utf-8'))
         gold_docs = gold.get('documents', [])
         gold_mentions = gold.get('mentions', [])
+        if not gold_docs and not gold_mentions:
+            continue
+
+        per_pdf_dir = pred_dir / gold_file.stem
+        if per_pdf_dir.is_dir():
+            pd = per_pdf_dir / 'documents.json'
+            pm = per_pdf_dir / 'mentions.json'
+        else:
+            pd = pred_dir / 'documents.json'
+            pm = pred_dir / 'mentions.json'
+
+        pred_docs = json.loads(pd.read_text(encoding='utf-8')) if pd.exists() else []
+        pred_mentions = json.loads(pm.read_text(encoding='utf-8')) if pm.exists() else []
+
         report[gold_file.stem] = {
             'document_match': match_documents(pred_docs, gold_docs),
             'page_accuracy': page_accuracy(pred_mentions, gold_mentions),
@@ -143,6 +163,62 @@ def evaluate(pred_dir: Path, gold_dir: Path) -> Dict:
             'by_doc_type': slice_by_doc_type(pred_docs, gold_docs),
         }
     return report
+
+
+def evaluate_multi(pred_dirs: Dict[str, Path], gold_dir: Path, pages_by_pdf: Dict[str, List[str]] = None) -> Dict:
+    """Evaluate multiple per-PDF prediction dirs against matched gold files.
+
+    Args:
+        pred_dirs: {pdf_stem: Path} mapping each PDF name to its output dir
+        gold_dir: directory of gold JSON files
+        pages_by_pdf: {pdf_stem: [page_texts]} for hallucination rate (optional)
+    """
+    per_pdf: Dict[str, Dict] = {}
+    agg_pred_docs, agg_gold_docs = [], []
+    agg_pred_mentions, agg_gold_mentions = [], []
+    agg_pages: List[str] = []
+
+    for gold_file in sorted(gold_dir.glob('*.json')):
+        stem = gold_file.stem
+        gold = json.loads(gold_file.read_text(encoding='utf-8'))
+        gold_docs = gold.get('documents', [])
+        gold_mentions = gold.get('mentions', [])
+        if not gold_docs and not gold_mentions:
+            continue
+
+        pred_dir = pred_dirs.get(stem)
+        if not pred_dir:
+            continue
+        pd = pred_dir / 'documents.json'
+        pm = pred_dir / 'mentions.json'
+        pred_docs = json.loads(pd.read_text(encoding='utf-8')) if pd.exists() else []
+        pred_mentions = json.loads(pm.read_text(encoding='utf-8')) if pm.exists() else []
+
+        per_pdf[stem] = {
+            'document_match': match_documents(pred_docs, gold_docs),
+            'title_accuracy': title_accuracy(pred_docs, gold_docs),
+            'unresolved_rate': unresolved_rate(pred_mentions),
+            'by_doc_type': slice_by_doc_type(pred_docs, gold_docs),
+            'pred_mention_count': len(pred_mentions),
+            'gold_doc_count': len(gold_docs),
+        }
+        if pages_by_pdf and stem in pages_by_pdf:
+            per_pdf[stem]['hallucination_rate'] = hallucination_rate(pred_mentions, pages_by_pdf[stem])
+
+        agg_pred_docs.extend(pred_docs)
+        agg_gold_docs.extend(gold_docs)
+        agg_pred_mentions.extend(pred_mentions)
+        agg_gold_mentions.extend(gold_mentions)
+
+    aggregate = {
+        'document_match': match_documents(agg_pred_docs, agg_gold_docs),
+        'title_accuracy': title_accuracy(agg_pred_docs, agg_gold_docs),
+        'unresolved_rate': unresolved_rate(agg_pred_mentions),
+        'by_doc_type': slice_by_doc_type(agg_pred_docs, agg_gold_docs),
+        'total_pred_mentions': len(agg_pred_mentions),
+        'total_gold_docs': len(agg_gold_docs),
+    }
+    return {'per_pdf': per_pdf, 'aggregate': aggregate}
 
 
 def main():

@@ -1,0 +1,150 @@
+{
+  "documents": [
+    {
+      "canonical_title": "Master Circular for Stock Brokers",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2025-06-17"
+    },
+    {
+      "canonical_title": "Securities and Exchange Board of India Act, 1992",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null
+    },
+    {
+      "canonical_title": "Depositories Act, 1996",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null
+    },
+    {
+      "canonical_title": "Securities Contracts (Regulation) (Stock Exchanges and Clearing Corporations) Regulations, 2018",
+      "doc_type": "Regulation",
+      "doc_id": null,
+      "date": null
+    }
+  ],
+  "mentions": [
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "Master Circular for Stock Brokers dated June 17, 2025",
+      "evidence_text": "Master Circular for Stock Brokers dated June 17, 2025 (hereinafter mentioned as “Master Circular”)",
+      "title": "Master Circular for Stock Brokers",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2025-06-17",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "Master Circular",
+      "evidence_text": "para 15 of Master Circular",
+      "title": "Master Circular for Stock Brokers",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2025-06-17",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "Master Circular",
+      "evidence_text": "para 15.3 of Master Circular",
+      "title": "Master Circular for Stock Brokers",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2025-06-17",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "Master Circular",
+      "evidence_text": "para 15.4 of Master Circular",
+      "title": "Master Circular for Stock Brokers",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2025-06-17",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 1,
+      "display_page": 2,
+      "mention_text": "Master Circular",
+      "evidence_text": "relevant paras in Master Circular",
+      "title": "Master Circular for Stock Brokers",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2025-06-17",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 2,
+      "display_page": 3,
+      "mention_text": "Master Circular for Stock Brokers dated June 17, 2025",
+      "evidence_text": "Paras 15.3 and 15.4 of Master Circular for Stock Brokers dated June 17, 2025",
+      "title": "Master Circular for Stock Brokers",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2025-06-17",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 2,
+      "display_page": 3,
+      "mention_text": "Master Circular for Stock Brokers dated June 17, 2025",
+      "evidence_text": "All other provisions specified in Master Circular for Stock Brokers dated June 17, 2025 shall continue to remain applicable.",
+      "title": "Master Circular for Stock Brokers",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2025-06-17",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 3,
+      "display_page": 4,
+      "mention_text": "Securities and Exchange Board of India Act, 1992",
+      "evidence_text": "Section 11(1) of Chapter IV of the Securities and Exchange Board of India Act, 1992",
+      "title": "Securities and Exchange Board of India Act, 1992",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 3,
+      "display_page": 4,
+      "mention_text": "Depositories Act, 1996",
+      "evidence_text": "Section 19 of Chapter IV of the Depositories Act, 1996",
+      "title": "Depositories Act, 1996",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 3,
+      "display_page": 4,
+      "mention_text": "Securities Contracts (Regulation) (Stock Exchanges and Clearing Corporations) Regulations, 2018",
+      "evidence_text": "Regulation 51 of Securities Contracts (Regulation) (Stock Exchanges and Clearing Corporations) Regulations, 2018",
+      "title": "Securities Contracts (Regulation) (Stock Exchanges and Clearing Corporations) Regulations, 2018",
+      "doc_type": "Regulation",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    }
+  ]
+}

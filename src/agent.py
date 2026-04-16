@@ -138,22 +138,32 @@ class GeminiAgent:
             except ImportError:
                 self._client = None
 
-    def extract_page(self, page_text: str, candidates: List[Candidate], page_index: int) -> List[Dict]:
+    def extract_page(self, page_text: str, candidates: List[Candidate], page_index: int,
+                      max_retries: int = 3) -> List[Dict]:
         if self._client is None:
             return []
         prompt = build_page_prompt(page_text, candidates, page_index)
         raw = ''
-        try:
-            resp = self._client.generate_content(
-                prompt,
-                generation_config={
-                    "response_mime_type": "application/json",
-                    "temperature": 0.0,
-                },
-            )
-            raw = resp.text if hasattr(resp, 'text') else ''
-        except Exception as e:
-            print(f"[agent] page {page_index} error: {e}")
+        for attempt in range(max_retries + 1):
+            try:
+                resp = self._client.generate_content(
+                    prompt,
+                    generation_config={
+                        "response_mime_type": "application/json",
+                        "temperature": 0.0,
+                    },
+                )
+                raw = resp.text if hasattr(resp, 'text') else ''
+                break
+            except Exception as e:
+                err_str = str(e)
+                if '429' in err_str and attempt < max_retries:
+                    wait = self.delay * (2 ** (attempt + 1))
+                    print(f"[agent] page {page_index} rate-limited, retrying in {wait:.0f}s (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(wait)
+                    continue
+                print(f"[agent] page {page_index} error: {e}")
+                break
         if self.delay:
             time.sleep(self.delay)
         return parse_response(raw)
