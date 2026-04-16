@@ -1,0 +1,126 @@
+{
+  "documents": [
+    {
+      "canonical_title": null,
+      "doc_type": "Circular",
+      "doc_id": "HO/(92)2026-IMD-POD-2/I/6961/2026",
+      "date": "2026-03-13"
+    },
+    {
+      "canonical_title": "Master Circular for Mutual Funds",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2026-03-20"
+    },
+    {
+      "canonical_title": "Securities and Exchange Board of India Act, 1992",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null
+    },
+    {
+      "canonical_title": "SEBI (Mutual Funds) Regulations, 1996",
+      "doc_type": "Regulations",
+      "doc_id": null,
+      "date": null
+    }
+  ],
+  "mentions": [
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "SEBI vide Circular No. HO/(92)2026-IMD-POD-2/I/6961/2026 dated March 13, 2026",
+      "evidence_text": "SEBI vide Circular No. HO/(92)2026-IMD-POD-2/I/6961/2026 dated March 13, 2026 (hereafter referred as “the circular”)",
+      "title": null,
+      "doc_type": "Circular",
+      "doc_id": "HO/(92)2026-IMD-POD-2/I/6961/2026",
+      "date": "2026-03-13",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "SEBI Master Circular for Mutual Funds dated March 20, 2026",
+      "evidence_text": "SEBI Master Circular for Mutual Funds dated March 20, 2026 (hereafter referred as “master circular”).",
+      "title": "Master Circular for Mutual Funds",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2026-03-20",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "clause 4 of the circular",
+      "evidence_text": "In clause 4 of the circular (clause 5.9.1 of the master circular), guidelines were specified for intraday borrowings by mutual funds.",
+      "title": null,
+      "doc_type": "Circular",
+      "doc_id": "HO/(92)2026-IMD-POD-2/I/6961/2026",
+      "date": "2026-03-13",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "clause 5.9.1 of the master circular",
+      "evidence_text": "In clause 4 of the circular (clause 5.9.1 of the master circular), guidelines were specified for intraday borrowings by mutual funds.",
+      "title": "Master Circular for Mutual Funds",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2026-03-20",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "the circular",
+      "evidence_text": "the applicability of guidelines related to the intraday borrowings in the circular, i.e., clause 5.9.1 of the master circular shall now come into effect from July 15, 2026.",
+      "title": null,
+      "doc_type": "Circular",
+      "doc_id": "HO/(92)2026-IMD-POD-2/I/6961/2026",
+      "date": "2026-03-13",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "clause 5.9.1 of the master circular",
+      "evidence_text": "the applicability of guidelines related to the intraday borrowings in the circular, i.e., clause 5.9.1 of the master circular shall now come into effect from July 15, 2026.",
+      "title": "Master Circular for Mutual Funds",
+      "doc_type": "Master Circular",
+      "doc_id": null,
+      "date": "2026-03-20",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "Section 11 (1) of the Securities and Exchange Board of India Act, 1992",
+      "evidence_text": "Section 11 (1) of the Securities and Exchange Board of India Act, 1992",
+      "title": "Securities and Exchange Board of India Act, 1992",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "Regulation 77 of SEBI (Mutual Funds) Regulations, 1996",
+      "evidence_text": "Regulation 77 of SEBI (Mutual Funds) Regulations, 1996",
+      "title": "SEBI (Mutual Funds) Regulations, 1996",
+      "doc_type": "Regulations",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    }
+  ]
+}

@@ -11,7 +11,10 @@ the package is not installed (useful for the unit suite).
 import json
 import re
 import time
+import warnings
 from typing import Dict, List, Optional
+
+warnings.filterwarnings('ignore', category=FutureWarning)
 
 from .candidates import Candidate
 

@@ -193,7 +193,7 @@ def format_progression(versions):
     if not reports:
         return 'No eval reports found.'
 
-    lines = ['## Progression: ' + ' → '.join(versions), '']
+    lines = ['## Progression: ' + ' -> '.join(versions), '']
 
     header = '| Metric |' + '|'.join(f' {v} ' for v in versions) + '|'
     sep = '|--------|' + '|'.join('------' for _ in versions) + '|'

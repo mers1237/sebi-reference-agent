@@ -1,0 +1,90 @@
+{
+  "documents": [
+    {
+      "canonical_title": null,
+      "doc_type": "notification",
+      "doc_id": null,
+      "date": "2026-03-21"
+    },
+    {
+      "canonical_title": "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018",
+      "doc_type": "Regulations",
+      "doc_id": null,
+      "date": null
+    },
+    {
+      "canonical_title": "Securities and Exchange Board of India Act, 1992",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null
+    },
+    {
+      "canonical_title": "Depositories Act, 1996",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null
+    }
+  ],
+  "mentions": [
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "notification dated March 21, 2026",
+      "evidence_text": "SEBI vide notification dated March 21, 2026",
+      "title": null,
+      "doc_type": "notification",
+      "doc_id": null,
+      "date": "2026-03-21",
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018",
+      "evidence_text": "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018 (“ICDR Regulations”)",
+      "title": "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018",
+      "doc_type": "Regulations",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "ICDR Regulations",
+      "evidence_text": "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018 (“ICDR Regulations”)",
+      "title": "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018",
+      "doc_type": "Regulations",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "Securities and Exchange Board of India Act, 1992",
+      "evidence_text": "Section 11 (1) of the Securities and Exchange Board of India Act, 1992",
+      "title": "Securities and Exchange Board of India Act, 1992",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    },
+    {
+      "source_page": 0,
+      "display_page": 1,
+      "mention_text": "Depositories Act, 1996",
+      "evidence_text": "Section 26(3) of the Depositories Act, 1996",
+      "title": "Depositories Act, 1996",
+      "doc_type": "Act",
+      "doc_id": null,
+      "date": null,
+      "relation_type": "references",
+      "confidence": "high"
+    }
+  ]
+}
