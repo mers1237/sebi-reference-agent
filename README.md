@@ -23,9 +23,11 @@ The pipeline is intentionally **hybrid**. Regex seeds the LLM with likely candid
 
 ```bash
 pip install -r requirements.txt
-export GEMINI_API_KEY=...                       # or pass --api-key
+cp .env.example .env                            # then paste your key into .env
 python -m src.run --pdf sample.pdf --out output/
 ```
+
+Get a Gemini API key at https://aistudio.google.com/apikey. The `.env` file is gitignored — each developer keeps their own. You can also `export GEMINI_API_KEY=...` or pass `--api-key` instead of using `.env`.
 
 Outputs are written to `output/mentions.json`, `output/documents.json`, `output/edges.json`.
 

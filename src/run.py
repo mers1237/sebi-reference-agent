@@ -10,6 +10,12 @@ import os
 from pathlib import Path
 from typing import Dict, List
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from .agent import GeminiAgent, dedupe_mentions
 from .candidates import filter_self_references, find_candidates
 from .extract import extract_pages
