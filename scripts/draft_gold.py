@@ -17,6 +17,9 @@ import os
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Allow running as `python scripts/draft_gold.py` from repo root
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 

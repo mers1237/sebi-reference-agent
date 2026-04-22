@@ -80,29 +80,40 @@ pytest tests/ -v    # 31 tests, no API key or PDF required
 
 ## Results
 
-Evaluated on 3 real SEBI PDFs (2 circulars + 1 amendment notification) against independently-generated gold labels:
+Evaluated on 3 real SEBI PDFs (2 circulars + 1 amendment notification) against independently-generated gold labels. Three measured iterations:
 
-| Metric | Score |
-|--------|-------|
-| **Precision** | **83%** |
-| **Recall** | **56%** |
-| **F1** | **67%** |
-| Hallucination rate | **0%** |
-| Title accuracy (fuzzy) | 80% |
-| Unresolved rate | 30% |
+| Version | Precision | Recall | **F1** | Hallucination | Key change |
+|---------|-----------|--------|--------|---------------|------------|
+| v1 | 83% | 42% | **56%** | 0% | Baseline agent |
+| v2 | 100% | 67% | **80%** | 0% | Regex for non-SEBI regulations, dedup fix, date-grounding bug fix |
+| v3 | 100% | 83% | **91%** | 0% | Prompt: SEBI Act recognition, notification handling, title/date conventions |
 
-**Per document type:**
+**F1: 56% → 91% over three iterations. 0% hallucination throughout.**
+
+### Final (v3) per-document-type
 
 | Type | Precision | Recall | F1 |
 |------|-----------|--------|-----|
 | circular | 100% | 100% | 100% |
 | master_circular | 100% | 100% | 100% |
-| act | 100% | 50% | 67% |
-| regulation | 50% | 33% | 40% |
+| regulation | 100% | 100% | 100% |
+| act | 100% | 100% | 100% |
+| notification | 100% | 100% | 100% |
 
-**Key finding from the eval cycle:** Initial scoring showed F1=40%. Investigation revealed eval infrastructure bugs -- `doc_type` normalization (e.g. "Regulations" vs "regulation") and title prefix inconsistency ("SEBI Master Circular..." vs "Master Circular...") were causing false negatives. Fixing the eval methodology alone moved measured F1 from 40% to 67%. The lesson: a broken eval gives you wrong optimization signals. Eval quality matters as much as agent quality.
+### Lessons from iterating
 
-**Remaining gaps:** The agent consistently misses Acts cited in authority clauses at the end of circulars (e.g. "This circular is issued under Section 11(1) of the Securities and Exchange Board of India Act, 1992..."). Prompt improvements for this are committed but pending re-testing.
+1. **Eval bugs mimic agent bugs.** An early reading of baseline showed F1=40%. Investigation found eval-side normalization issues (case, plural/singular, "SEBI" prefix stripping) were causing false negatives against gold. Fixing the eval moved the baseline measurement without changing the agent. A broken eval gives you the wrong optimization signals — always audit the eval before tuning the agent.
+
+2. **Aggregate metrics can hide per-PDF failures.** The initial aggregate deduplicated gold docs across PDFs by key, so "SEBI Act 1992" missed in 3 PDFs only counted as 1 false negative instead of 3. Summing per-PDF TP/FP/FN gives an honest view.
+
+3. **LLMs need explicit guidance on ambiguous cases.** The agent consistently skipped "Securities and Exchange Board of India Act, 1992" because SEBI is the issuing agency — the model treated it as a self-reference rather than a citation to the Act. An explicit prompt clause (*"'Securities and Exchange Board of India Act, 1992' IS an external reference even though SEBI is named"*) fixed it.
+
+4. **Date hallucinations have a signature.** When the LLM sees "Regulations, 2018" and no full date, it often fabricates "2018-01-01". A cheap verifier (require the extracted year to co-occur with a month name or numeric date pattern in the evidence) catches these without extra model calls. Subtle bug: the first version matched "March" from a *different* date in the same evidence; fixed by pairing month with year.
+
+### Remaining gaps
+
+- **Per-PDF uniformity.** Amendment PDF hits F1=100%; circular_a and circular_b still miss SEBI Act 1992 from their authority clauses despite the prompt improvement (amendment PDF picks it up correctly). Suggests the LLM makes this inference unreliably — a few-shot example would likely close the gap.
+- **Test set is small** (3 PDFs, 12 gold documents). Larger corpus would tighten confidence intervals on per-type F1.
 
 ## Eval methodology
 

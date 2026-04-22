@@ -35,22 +35,43 @@ _MONTH_NAMES = (
 _NUMERIC_DATE_RE = re.compile(r'\d{1,2}[./\-]\d{1,2}[./\-]\d{2,4}')
 
 
+_FULL_DATE_RE = re.compile(
+    r'(?:'
+    # "March 13, 2026" or "13 March 2026" or "March 2026"
+    r'(?:(?:january|february|march|april|may|june|july|august|september|october|november|december'
+    r'|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\.?\s+\d{1,2},?\s*(\d{4})'
+    r'|\d{1,2}\s+(?:january|february|march|april|may|june|july|august|september|october|november|december'
+    r'|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\.?,?\s*(\d{4})'
+    r'|(?:january|february|march|april|may|june|july|august|september|october|november|december'
+    r'|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\.?\s+(\d{4}))'
+    r'|'
+    # "13/03/2026" or "2026-03-13"
+    r'(\d{4})[./\-]\d{1,2}[./\-]\d{1,2}'
+    r'|'
+    r'\d{1,2}[./\-]\d{1,2}[./\-](\d{4})'
+    r')',
+    re.IGNORECASE,
+)
+
+
 def _date_grounded(date_str: str, evidence: str) -> bool:
-    """True if the evidence contains a real date expression, not just a bare year.
+    """True if the evidence contains a real date expression for this specific year.
 
     Catches the common hallucination where the LLM sees 'Regulations, 2018'
-    and fabricates '2018-01-01'.
+    and fabricates '2018-01-01'. A month name in the evidence is only relevant
+    if it's paired with the SAME year as the extracted date.
     """
     if not date_str or not evidence:
         return False
     year = date_str[:4]
     if year not in evidence:
         return False
-    ev_lower = evidence.lower()
-    if any(m in ev_lower for m in _MONTH_NAMES):
-        return True
-    if _NUMERIC_DATE_RE.search(evidence):
-        return True
+    # Check that a full date expression (month+year or numeric date) exists
+    # with the SAME year as the extracted date
+    for m in _FULL_DATE_RE.finditer(evidence):
+        matched_year = next((g for g in m.groups() if g), None)
+        if matched_year == year:
+            return True
     return False
 
 

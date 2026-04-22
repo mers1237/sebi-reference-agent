@@ -7,6 +7,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 from typing import Dict, List
 
@@ -23,6 +24,24 @@ from .resolve import AliasResolver, TitleResolver
 from .verify import verify_mentions
 
 
+_TRAILING_YEAR_RE = re.compile(r',?\s*\d{4}\s*$')
+
+
+def _title_for_dedup_key(title: str, dtype: str, date: str) -> str:
+    """Normalize title for dedup.
+
+    For circulars/master circulars with a separate `date` field, strip any
+    trailing ", YYYY" from the title — otherwise the LLM's inconsistency
+    (sometimes including year, sometimes not) fragments a single document
+    into multiple entries. For regulations/acts, keep the year — it's part
+    of the canonical name ("SEBI (MF) Regulations, 1996").
+    """
+    t = title.lower().strip()
+    if dtype in ('circular', 'master_circular') and date:
+        t = _TRAILING_YEAR_RE.sub('', t).strip()
+    return t
+
+
 def build_documents(mentions: List[Dict]) -> List[Dict]:
     """Collapse mention list into deduplicated canonical documents."""
     docs: Dict[str, Dict] = {}
@@ -30,10 +49,15 @@ def build_documents(mentions: List[Dict]) -> List[Dict]:
         doc_id = (m.get('doc_id') or '').strip()
         title = (m.get('title') or '').strip()
         dtype = m.get('doc_type') or 'other'
+        date = m.get('date') or ''
         if doc_id:
             key = f"id:{doc_id.lower()}"
         elif title:
-            key = f"t:{dtype}:{title.lower()}"
+            key = f"t:{dtype}:{_title_for_dedup_key(title, dtype, date)}"
+        elif date:
+            # Title-less references with a date (e.g. "notification dated March 21, 2026")
+            # still deserve a document entry, keyed by type + date.
+            key = f"t:{dtype}:date:{date}"
         else:
             continue
         entry = docs.setdefault(key, {
@@ -47,6 +71,18 @@ def build_documents(mentions: List[Dict]) -> List[Dict]:
         })
         if title and not entry['canonical_title']:
             entry['canonical_title'] = title
+        # For circulars/master_circulars with a date, prefer title WITHOUT trailing year
+        # (matches common gold/canonical convention). Pick the cleanest variant across
+        # all mentions of this document.
+        if title and dtype in ('circular', 'master_circular') and date:
+            stripped = _TRAILING_YEAR_RE.sub('', title).strip()
+            current = entry['canonical_title'] or ''
+            current_stripped = _TRAILING_YEAR_RE.sub('', current).strip()
+            # Prefer the shorter (year-stripped) form
+            if stripped and (not current or len(stripped) < len(current)):
+                entry['canonical_title'] = stripped
+            elif current_stripped and current_stripped != current:
+                entry['canonical_title'] = current_stripped
         if m.get('date') and not entry['date']:
             entry['date'] = m['date']
         sp = m.get('source_page')

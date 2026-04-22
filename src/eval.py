@@ -225,8 +225,27 @@ def evaluate_multi(pred_dirs: Dict[str, Path], gold_dir: Path, pages_by_pdf: Dic
         agg_pred_mentions.extend(pred_mentions)
         agg_gold_mentions.extend(gold_mentions)
 
+    # Sum per-PDF TP/FP/FN to get an honest aggregate: a document missing in
+    # PDF A and PDF B is two separate misses, not one. (Naïve concat + match
+    # would dedupe across PDFs — e.g. "SEBI Act, 1992" appearing in 3 PDFs
+    # would collapse to one gold key, hiding two of the three misses.)
+    total_tp = sum(r['document_match']['tp'] for r in per_pdf.values())
+    total_fp = sum(r['document_match']['fp'] for r in per_pdf.values())
+    total_fn = sum(r['document_match']['fn'] for r in per_pdf.values())
+    agg_p = total_tp / (total_tp + total_fp) if (total_tp + total_fp) else 0.0
+    agg_r = total_tp / (total_tp + total_fn) if (total_tp + total_fn) else 0.0
+    agg_f1 = 2 * agg_p * agg_r / (agg_p + agg_r) if (agg_p + agg_r) else 0.0
+
+    # Union of all FP/FN keys across PDFs (for visibility on what's missing)
+    all_fp_keys = sorted({k for r in per_pdf.values() for k in r['document_match']['fp_keys']})
+    all_fn_keys = sorted({k for r in per_pdf.values() for k in r['document_match']['fn_keys']})
+
     aggregate = {
-        'document_match': match_documents(agg_pred_docs, agg_gold_docs),
+        'document_match': {
+            'tp': total_tp, 'fp': total_fp, 'fn': total_fn,
+            'precision': agg_p, 'recall': agg_r, 'f1': agg_f1,
+            'fp_keys': all_fp_keys, 'fn_keys': all_fn_keys,
+        },
         'title_accuracy': title_accuracy(agg_pred_docs, agg_gold_docs),
         'unresolved_rate': unresolved_rate(agg_pred_mentions),
         'by_doc_type': slice_by_doc_type(agg_pred_docs, agg_gold_docs),

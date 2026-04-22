@@ -34,6 +34,11 @@ SEBI_REGULATIONS = re.compile(
     r'\bSEBI\s*\([^)]{3,150}\)\s*Regulations,\s*\d{4}'
 )
 
+# Broader regulation pattern: "X Regulations, YYYY" (catches non-SEBI-prefixed regulations)
+GENERAL_REGULATIONS = re.compile(
+    r'\b[A-Z][A-Za-z\s&()]{5,120}?Regulations,\s*\d{4}'
+)
+
 # Acts: "Securities and Exchange Board of India Act, 1992", "Companies Act, 2013", etc.
 ACT_REFERENCE = re.compile(
     r'\b(?:[A-Z][A-Za-z&,\s]{2,70}?)Act,\s*\d{4}'
@@ -61,9 +66,9 @@ SECTION_OF_ACT = re.compile(
     r'\b[Ss]ection\s+\d+[A-Z]?(?:\s*\(\d+\))?\s+of\s+the\s+[A-Z][A-Za-z\s&()]+?Act,\s*\d{4}'
 )
 
-# "Regulation X of the SEBI (...) Regulations, YYYY"
+# "Regulation X of the SEBI (...) Regulations, YYYY" or "Regulation X of Y Regulations, YYYY"
 REGULATION_OF = re.compile(
-    r'\b[Rr]egulation\s+\d+[A-Z]?(?:\s*\(\d+\))?\s+of\s+(?:the\s+)?SEBI\s*\([^)]{3,150}\)\s*Regulations,\s*\d{4}'
+    r'\b[Rr]egulation\s+\d+[A-Z]?(?:\s*\(\d+\))?\s+of\s+(?:the\s+)?(?:SEBI\s*\([^)]{3,150}\)|[A-Z][A-Za-z\s&()]{5,120}?)\s*Regulations,\s*\d{4}'
 )
 
 # Circular No. X/Y/Z
@@ -81,6 +86,7 @@ PATTERNS = {
     'circular_dated': CIRCULAR_DATED,
     'master_circular': MASTER_CIRCULAR,
     'sebi_regulations': SEBI_REGULATIONS,
+    'general_regulations': GENERAL_REGULATIONS,
     'act_reference': ACT_REFERENCE,
     'gazette_notification': GAZETTE_NOTIFICATION,
     'consultation_paper': CONSULTATION_PAPER,

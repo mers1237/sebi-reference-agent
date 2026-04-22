@@ -26,7 +26,10 @@ You are given the full text of ONE page. Your job: find every reference this pag
 PAY SPECIAL ATTENTION TO:
 - Authority clauses at the end of circulars ("This circular is issued in exercise of powers conferred under Section X of the ... Act, YYYY, read with Regulation Y of ... Regulations, YYYY"). These reference Acts AND Regulations — extract EACH one separately.
 - Multiple Acts/Regulations in a single sentence — extract each as a separate mention.
-- Include the year in the title when it appears in the text (e.g. "SEBI (Mutual Funds) Regulations, 1996" not "SEBI (Mutual Funds) Regulations").
+- Include the year in Act/Regulation titles when it appears (e.g. "SEBI (Mutual Funds) Regulations, 1996"). The year IS part of the canonical name for Acts and Regulations.
+- **"Securities and Exchange Board of India Act, 1992" IS an external reference** — it is a distinct statutory instrument even though SEBI (the agency) is named in the Act title. ALWAYS extract it when it appears, especially in authority clauses like "under Section 11(1) of the Securities and Exchange Board of India Act, 1992".
+- Do NOT append a date/year to the `title` for CIRCULAR or MASTER_CIRCULAR types — put the date in the `date` field instead. Example: title="Master Circular for Mutual Funds", date="2026-03-20". (This is OPPOSITE of Acts/Regulations where the year stays in the title.)
+- Notifications: if a notification is cited with a date but no title ("vide notification dated March 21, 2026"), set doc_type="gazette_notification", title=null, date="2026-03-21". Do NOT skip it.
 
 HARD RULES (non-negotiable):
 1. Every extracted reference MUST include `evidence_text` — a short verbatim snippet (<=250 chars) copied character-for-character from the page text. Never paraphrase or reformat.

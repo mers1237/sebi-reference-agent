@@ -67,6 +67,13 @@ def test_find_candidates_detects_regulations_and_acts_and_master_circular():
     assert 'master_circular' in names
 
 
+def test_find_candidates_detects_non_sebi_regulations():
+    txt = "Regulation 51 of Securities Contracts (Regulation) (Stock Exchanges and Clearing Corporations) Regulations, 2018"
+    cands = find_candidates(txt)
+    names = {c.pattern_name for c in cands}
+    assert 'general_regulations' in names or 'regulation_of' in names
+
+
 def test_find_candidates_deduplicates_within_pattern():
     txt = "SEBI Act, 1992 and again SEBI Act, 1992."
     cands = find_candidates(txt)
@@ -178,6 +185,21 @@ def test_verify_mentions_keeps_grounded_date():
     out = verify_mentions(mentions, pages)
     assert len(out) == 1
     assert out[0]['date'] == '2026-03-13'
+
+
+def test_verify_mentions_nulls_date_when_month_belongs_to_different_year():
+    """Regression: evidence "notification dated March 21, 2026 ... Regulations, 2018"
+    has month March paired with 2026, not 2018. Date '2018-01-01' must be nulled."""
+    pages = ["SEBI vide notification dated March 21, 2026 has amended the "
+             "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018"]
+    mentions = [{
+        'source_page': 0, 'mention_text': 'ICDR Regulations',
+        'evidence_text': pages[0],
+        'date': '2018-01-01', 'title': 'SEBI (ICDR) Regulations, 2018',
+    }]
+    out = verify_mentions(mentions, pages)
+    assert len(out) == 1
+    assert out[0]['date'] is None, "Date should be nulled when month belongs to a different year"
 
 
 # --- Agent parsing ----------------------------------------------------------
